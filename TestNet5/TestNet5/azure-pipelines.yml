@@ -1,25 +1,25 @@
-﻿# Starter pipeline
+# Starter pipeline
 # Start with a minimal pipeline that you can customize to build and deploy your code.
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
 trigger:
--master
+- master
 
 pool:
 vmImage: 'ubuntu-latest'
 
 steps:
--script: |
+- script: |
 echo Starting docker build
-docker build -t testnet5 .
+docker build -t testenet5 .
 displayName: 'Run docker build'
 
 - task: ECRPushImage@1
-inputs:
-awsCredentials: 'aws hmg'
-regionName: 'us-west-2'
-imageSource: 'imagename'
-sourceImageName: 'testnet5'
-repositoryName: 'testnet5repo'
-autoCreateRepository: true
+  inputs:
+    awsCredentials: 'aws hmg'
+    regionName: 'us-east-1'
+    imageSource: 'imagename'
+    sourceImageName: 'testenet5'
+    repositoryName: 'testenet5repo'
+    autoCreateRepository: true
