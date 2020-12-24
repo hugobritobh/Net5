@@ -3,3 +3,10 @@
 ################################################################################
 
 *.suo
+/.vs/ProjectSettings.json
+*.sqlite
+/.vs/VSWorkspaceState.json
+*.dll
+/TestNet5/TestNet5/bin/Debug/net5.0
+/TestNet5/TestNet5/obj
+*.user
