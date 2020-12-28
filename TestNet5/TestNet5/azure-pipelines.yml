@@ -9,14 +9,15 @@
    buildConfiguration: 'Release'
 
  steps:
- - task: UseDotNet@5
+ - task: UseDotNet@2
+   displayName: 'Use .NET Core sdk 5.0.101'
    inputs:
      packageType: 'sdk'
      version: '5.0.101'
      includePreviewVersions: true
 
- - task: DotNetCoreCLI@5
-   displayName: Build
+ - task: DotNetCoreCLI@2
+   displayName: 'Build .NET Core 5'
    inputs:
      command: build
      projects: '**/*.csproj'
