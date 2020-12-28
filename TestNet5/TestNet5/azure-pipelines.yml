@@ -9,13 +9,13 @@
    buildConfiguration: 'Release'
 
  steps:
- - task: UseDotNet@2
+ - task: UseDotNet@5
    inputs:
      packageType: 'sdk'
      version: '5.0.101'
      includePreviewVersions: true
 
- - task: DotNetCoreCLI@2
+ - task: DotNetCoreCLI@5
    displayName: Build
    inputs:
      command: build
