@@ -1,5 +1,8 @@
 
- pool: AwsHMG
+ pool: 
+   name: AwsHMG
+   demands:
+       - AZP_POOL -equals AwsHMG
    vmImage: 'ubuntu-latest'
 
  variables:
