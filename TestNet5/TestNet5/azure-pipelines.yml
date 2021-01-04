@@ -7,8 +7,6 @@ stages:
 - stage: SpinUpAgent
   pool:
       name: $(agentPool)
-      demands:
-      - category -equals init
       
   jobs: 
       - job: SpinupAgent
@@ -25,27 +23,30 @@ stages:
       name: $(agentPool)
       demands:
       - Agent.Name -equals $(agentType)-$(Build.BuildId)
-      
-      steps:
-        - task: UseDotNet@2
-          displayName: 'Use .NET Core sdk 5.0.101'
-          inputs:
-             packageType: 'sdk'
-             version: '5.0.101'
-             includePreviewVersions: true
+  
+  jobs: 
+      - job: UseNETCore
+        steps:
+          - task: UseDotNet@2
+            displayName: 'Use .NET Core sdk 5.0.101'
+            inputs:
+               packageType: 'sdk'
+               version: '5.0.101'
+               includePreviewVersions: true
 
-        - task: DotNetCoreCLI@2
-          displayName: 'Build .NET Core 5'
-          inputs:
-             command: build
-             projects: '**/*.csproj'
-             arguments: '--configuration $(buildConfiguration)' # Update this to match your need)'
+      - job: BuildNetCore
+        steps:
+          - task: DotNetCoreCLI@2
+            displayName: 'Build .NET Core 5'
+            inputs:
+               command: build
+               projects: '**/*.csproj'
+               arguments: '--configuration $(buildConfiguration)' # Update this to match your need)'
   
 - stage: DeleteAgent
   pool:
       name: $(agentPool)
-      demands:
-      - category -equals init
+
   jobs:
     - job: HelmUninstall
       steps:
