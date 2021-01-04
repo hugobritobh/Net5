@@ -1,12 +1,22 @@
-name: $(version).$(Rev:r)
-- task: UseDotNet@2
+ pool: 
+   name: AwsHMG
+   demands:
+       - AZP_POOL -equals AwsHMG
+   vmImage: 'ubuntu-latest'
+
+ variables:
+   buildConfiguration: 'Release'
+
+ steps:
+ - task: UseDotNet@2
+   displayName: 'Use .NET Core sdk 5.0.101'
    inputs:
      packageType: 'sdk'
      version: '5.0.101'
      includePreviewVersions: true
 
  - task: DotNetCoreCLI@2
-   displayName: Build
+   displayName: 'Build .NET Core 5'
    inputs:
      command: build
      projects: '**/*.csproj'
