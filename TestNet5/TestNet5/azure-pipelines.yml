@@ -54,6 +54,7 @@ stages:
 
   jobs:
     - job: HelmUninstall
+      condition: always()
       steps:
         - checkout: none
         - script: |
