@@ -1,23 +1,55 @@
- pool: 
-   name: AwsHMG
-   demands:
-       - AZP_POOL -equals AwsHMG
-   vmImage: 'ubuntu-latest'
+variables:
+  agentPool: 'AwsHMG'
+  agentType: 'net5'
+  buildConfiguration: 'Release'
 
- variables:
-   buildConfiguration: 'Release'
+stages: 
+- stage: SpinUpAgent
+  pool:
+      name: $(agentPool)
+      demands:
+      - category -equals init
+      
+      jobs: 
+      - job: SpinupAgent
+      displayName: Spining up Agent
 
- steps:
- - task: UseDotNet@2
-   displayName: 'Use .NET Core sdk 5.0.101'
-   inputs:
+  steps:
+    - checkout: none
+    - script: |
+        helm repo update
+        helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) emberstack/azure-pipelines-agent
+      displayName: "Create an Agent- HELM"
+
+- stage: Build
+  pool:
+      name: $(agentPool)
+      demands:
+      - Agent.Name -equals $(agentType)-$(Build.BuildId)
+  steps:
+  - task: UseDotNet@2
+    displayName: 'Use .NET Core sdk 5.0.101'
+    inputs:
      packageType: 'sdk'
      version: '5.0.101'
      includePreviewVersions: true
 
- - task: DotNetCoreCLI@2
-   displayName: 'Build .NET Core 5'
-   inputs:
+  - task: DotNetCoreCLI@2
+    displayName: 'Build .NET Core 5'
+    inputs:
      command: build
      projects: '**/*.csproj'
      arguments: '--configuration $(buildConfiguration)' # Update this to match your need)'
+  
+- stage: DeleteAgent
+  pool:
+      name: $(agentPool)
+      demands:
+      - category -equals init
+  jobs:
+    - job: $(agentType)_Build
+      steps:
+      - checkout: none
+      - script: |
+          helm uninstall --namespace $(agentPool) $(agentType)-$(Build.BuildId)
+        displayName: "Delete an Agent - HELM"
