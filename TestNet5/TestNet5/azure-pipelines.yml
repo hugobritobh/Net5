@@ -1,24 +1,76 @@
+name: $(version).$(Rev:r)
 
- pool: 
-   name: AwsHMG
-   demands:
-       - AZP_POOL -equals AwsHMG
-   vmImage: 'ubuntu-latest'
+variables:
+  version: 2.0
+  buildConfiguration: "Release"
+  imageRepository: "emberstack/azure-pipelines-agent"
+  DOCKER_CLI_EXPERIMENTAL: "enabled"
 
- variables:
-   buildConfiguration: 'Release'
+trigger:
+  branches:
+    include:
+      - "*"
+      
+  paths:
+    include:
+      - src/*
+      - azure-pipelines.yaml
 
- steps:
- - task: UseDotNet@2
-   displayName: 'Use .NET Core sdk 5.0.101'
-   inputs:
-     packageType: 'sdk'
-     version: '5.0.101'
-     includePreviewVersions: true
+stages:
+  - stage: ci
+    displayName: "CI"
+    jobs:
+      - job: build
+        displayName: "Build"
+        
+        pool: 
+            name: AwsHMG
+            demands:
+               - AZP_POOL -equals AwsHMG
+               
+        steps:
+          - task: DockerInstaller@0
+            displayName: "Docker install"
+            inputs:
+              dockerVersion: "20.10.1"
 
- - task: DotNetCoreCLI@2
-   displayName: 'Build .NET Core 5'
-   inputs:
-     command: build
-     projects: '**/*.csproj'
-     arguments: '--configuration $(buildConfiguration)' # Update this to match your need)'
+          - task: Docker@2
+            displayName: "Docker login"
+            inputs:
+              containerRegistry: "Emberstack Docker Hub"
+              command: login
+
+          - script: |
+              mkdir -p artifacts/helm
+            workingDirectory: "$(Build.ArtifactStagingDirectory)"
+            displayName: "Create Artifacts directories"
+
+          - task: HelmInstaller@1
+            inputs:
+              helmVersionToInstall: "3.2.4"
+            displayName: "Helm install"
+
+          - script: |
+              cp README.md src/helm/azure-pipelines-agent/README.md
+            displayName: "Import README in helm chart"
+
+          - script: |
+              helm package --destination $(Build.ArtifactStagingDirectory)/artifacts/helm --version $(Build.BuildNumber) --app-version $(Build.BuildNumber) src/helm/azure-pipelines-agent
+            displayName: "Helm Package"
+
+          - publish: "$(Build.ArtifactStagingDirectory)/artifacts/helm"
+            artifact: "helm"
+            displayName: "Publish helm artifact"
+
+          - script: |
+              docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+              docker buildx rm builder
+              docker buildx create --name builder --driver docker-container --use
+              docker buildx inspect --bootstrap
+              docker buildx build --push --platform linux/arm64 -t $(imageRepository):build-$(Build.BuildNumber)-arm64 -f src/docker/Dockerfile src/docker
+              docker pull $(imageRepository):build-$(Build.BuildNumber)-arm64
+              docker manifest create  $(imageRepository):build-$(Build.BuildNumber) $(imageRepository):build-$(Build.BuildNumber)-arm64
+              docker manifest inspect $(imageRepository):build-$(Build.BuildNumber)
+              docker manifest push    $(imageRepository):build-$(Build.BuildNumber)
+            displayName: "Build and push multi-arch Docker image"
+
