@@ -19,7 +19,7 @@ stages:
               ./get_helm.sh
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
-              helm upgrade --install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
+              helm upgrade --install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set serviceAccount.create=false --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
             displayName: "Create an Agent- HELM"
             
 - stage: Build
