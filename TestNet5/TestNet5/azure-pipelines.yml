@@ -13,7 +13,11 @@ stages:
         displayName: Spining up Agent
         steps:
           - checkout: none
-          - script: helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
+          - script: | 
+              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+              chmod 700 get_helm.sh
+              ./get_helm.sh
+              helm install --namespace $(agentPool) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
             displayName: "Create an Agent- HELM"
             
 - stage: Build
