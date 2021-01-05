@@ -1,6 +1,6 @@
 variables:
   project: 'teste-net5'
-  agentPool: 'AwsHMG2'
+  agentPool: 'AwsHMG3'
   agentType: 'net5'
   buildConfiguration: 'Release'
 
