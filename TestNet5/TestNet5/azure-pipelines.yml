@@ -26,7 +26,9 @@ stages:
             
 - stage: Teste
   pool:
-      name: $(agentType)-$(Build.BuildId)
+      name: $(agentPool)
+      demands:
+      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
       
   jobs: 
       - job: Teste
@@ -45,40 +47,12 @@ stages:
               sleep 3
               sleep 3
             displayName: "Teste Sleep"
-                             
-- stage: Teste2
-  pool:
-      name: $(agentType)-azure-pipelines-agent-0
-      
-  jobs: 
-      - job: Teste2
-        displayName: Teste2
-        steps:
-          - checkout: none
-          - script: | 
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-            displayName: "Teste 2 Sleep"
-                 
+    
 - stage: Build
   pool:
-      name: $(agentType)-$(Build.BuildId)
+      name: $(agentPool)
       demands:
-      - Agent.Name -equals $(agentType)-$(Build.BuildId)
+      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
   
   jobs: 
       - job: UseNETCore
