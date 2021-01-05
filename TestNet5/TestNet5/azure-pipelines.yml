@@ -21,7 +21,7 @@ stages:
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
               sudo helm upgrade --install --wait --namespace $(project) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa --set pipelines.pool=$(agentPool) $(agentType)-$(Build.BuildId) emberstack/azure-pipelines-agent
-              sleep 40
+              sleep 5
             displayName: "Create an Agent- HELM"
             
 - stage: Teste
@@ -64,8 +64,6 @@ stages:
                version: '5.0.101'
                includePreviewVersions: true
 
-      - job: BuildNetCore
-        steps:
           - task: DotNetCoreCLI@2
             displayName: 'Build .NET Core 5'
             inputs:
@@ -77,7 +75,9 @@ stages:
   condition: always()
   pool:
       name: $(agentType)-$(Build.BuildId)
-
+      demands:
+      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
+      
   jobs:
     - job: HelmUninstall
       timeoutInMinutes: 1
