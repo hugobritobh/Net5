@@ -25,7 +25,7 @@ stages:
             
 - stage: Teste
   pool:
-      name: $(agentPool)
+      name: $(agentType)-$(Build.BuildId)
       
   jobs: 
       - job: Teste
@@ -53,7 +53,7 @@ stages:
                  
 - stage: Build
   pool:
-      name: $(agentPool)
+      name: $(agentType)-$(Build.BuildId)
       demands:
       - Agent.Name -equals $(agentType)-$(Build.BuildId)
   
@@ -79,7 +79,7 @@ stages:
 - stage: DeleteAgent
   condition: always()
   pool:
-      name: $(agentPool)
+      name: $(agentType)-$(Build.BuildId)
 
   jobs:
     - job: HelmUninstall
