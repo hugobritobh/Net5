@@ -3,6 +3,7 @@ variables:
   agentPool: 'AwsHMG4'
   agentType: 'net5'
   buildConfiguration: 'Release'
+  agentId: $(agentType)-$(Build.BuildId)
 
 stages: 
 - stage: CreateAgent
@@ -20,7 +21,7 @@ stages:
               ./get_helm.sh
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
-              sudo helm upgrade --install --wait --namespace $(project) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa --set pipelines.pool=$(agentPool) $(agentType)-$(Build.BuildId) emberstack/azure-pipelines-agent
+              sudo helm upgrade --install --wait --namespace $(project) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa --set pipelines.pool=$(agentPool) $(agentId) emberstack/azure-pipelines-agent
               sleep 25
             displayName: "Create an Agent- HELM"
            
@@ -28,7 +29,7 @@ stages:
   pool:
       name: $(agentPool)
       demands:
-      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
+      - Agent.Name -equals $(agentId)-azure-pipelines-agent-0
   
   jobs: 
       - job: UseNETCore
