@@ -31,10 +31,10 @@ stages:
       - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
   
   jobs: 
-      - job: UseNETCore
+      - job: NETCore
         steps:
           - task: UseDotNet@2
-            displayName: 'Use .NET Core sdk 5.0.101'
+            displayName: '.NET Core sdk 5.0.101'
             inputs:
                packageType: 'sdk'
                version: '5.0.101'
@@ -58,5 +58,5 @@ stages:
       steps:
         - checkout: none
         - script: |
-            helm uninstall --namespace $(project) $(agentType)-$(Build.BuildId)
+            sudo helm uninstall --namespace $(project) $(agentType)-$(Build.BuildId)
           displayName: "Delete an Agent - HELM"
