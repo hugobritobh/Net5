@@ -20,7 +20,8 @@ stages:
               ./get_helm.sh
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
-              helm upgrade --install --wait --namespace teste-net5 $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set azdoPool=$(agentPool) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
+              helm upgrade --install --wait --namespace $(project) $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set azdoPool=$(agentPool) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
+              sleep 90
             displayName: "Create an Agent- HELM"
             
 - stage: Build
@@ -59,5 +60,5 @@ stages:
       steps:
         - checkout: none
         - script: |
-            helm uninstall --namespace $(agentPool) $(agentType)-$(Build.BuildId)
+            helm uninstall --namespace $(project) $(agentType)-$(Build.BuildId)
           displayName: "Delete an Agent - HELM"
