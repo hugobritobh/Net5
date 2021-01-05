@@ -20,6 +20,7 @@ stages:
               ./get_helm.sh
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
+              kubectl create rolebinding --role=access-secrets default-to-secrets --serviceaccount=$(project):azure-pipelines-agent
               helm upgrade --install --namespace $(project) --wait $(agentType)-$(Build.BuildId) --set agent.type=$(agentType) --set azdoPool=$(agentPool) --set serviceAccount.create=false --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa emberstack/azure-pipelines-agent
             displayName: "Create an Agent- HELM"
             
