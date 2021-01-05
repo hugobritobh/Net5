@@ -10,12 +10,11 @@ stages:
       name: $(agentPool)
       
   jobs: 
-      - job: SpinupAgent
+      - job: CreateAgent
         displayName: Spining up Agent
         steps:
           - checkout: none
           - script: | 
-              sleep 5
               curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
               chmod 700 get_helm.sh
               ./get_helm.sh
