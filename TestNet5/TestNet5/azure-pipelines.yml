@@ -21,33 +21,9 @@ stages:
               helm repo add emberstack https://emberstack.github.io/helm-charts
               helm repo update
               sudo helm upgrade --install --wait --namespace $(project) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa --set pipelines.pool=$(agentPool) $(agentType)-$(Build.BuildId) emberstack/azure-pipelines-agent
-              sleep 5
+              sleep 15
             displayName: "Create an Agent- HELM"
-            
-- stage: Teste
-  pool:
-      name: $(agentPool)
-      demands:
-      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
-      
-  jobs: 
-      - job: Teste
-        displayName: Teste
-        steps:
-          - checkout: none
-          - script: | 
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-              sleep 3
-            displayName: "Teste Sleep"
-    
+           
 - stage: Build
   pool:
       name: $(agentPool)
