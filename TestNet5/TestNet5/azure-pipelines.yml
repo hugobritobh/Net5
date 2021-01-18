@@ -10,7 +10,7 @@ stages:
   pool:
       name: $(agentPool)
       demands:
-      - Agent.OSArchitecture -equals ARM64
+      - Agent.OSArchitecture -equals X64
   
   jobs: 
       - job: NETCore
