@@ -8,22 +8,9 @@ stages:
 - stage: CreateAgent
   pool:
       name: $(agentPool)
-      
-  jobs: 
-      - job: CreateAgent
-        displayName: Spining up Agent
-        steps:
-          - checkout: none
-          - script: | 
-              curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-              chmod 700 get_helm.sh
-              ./get_helm.sh
-              helm repo add emberstack https://emberstack.github.io/helm-charts
-              helm repo update
-              sudo helm upgrade --install --wait --namespace $(project) --set pipelines.url=https://dev.azure.com/alm-animaeducacao --set pipelines.pat=b5kqhw7adz423g7pjt77tud3tzwhapynggvz3rpdbcdj4fwmmbxa --set pipelines.pool=$(agentPool) $(agentType)-$(Build.BuildId) emberstack/azure-pipelines-agent
-              sleep 50
-            displayName: "Create an Agent- HELM"
-           
+      demands:
+        - Agent.OSArchitecture -equals ARM64
+                 
 - stage: Build
   pool:
       name: $(agentPool)
@@ -47,16 +34,3 @@ stages:
                projects: '**/*.csproj'
                arguments: '--configuration $(buildConfiguration)' # Update this to match your need)'
   
-- stage: DeleteAgent
-  condition: always()
-  pool:
-      name: $(agentPool)
-      
-  jobs:
-    - job: HelmUninstall
-      timeoutInMinutes: 1
-      steps:
-        - checkout: none
-        - script: |
-            sudo helm uninstall --namespace $(project) $(agentType)-$(Build.BuildId)
-          displayName: "Delete an Agent - HELM"
