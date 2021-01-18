@@ -5,17 +5,12 @@ variables:
   buildConfiguration: 'Release'
 
 stages: 
-- stage: CreateAgent
-  pool:
-      name: $(agentPool)
-      demands:
-        - Agent.OSArchitecture -equals ARM64
-                 
+      
 - stage: Build
   pool:
       name: $(agentPool)
       demands:
-      - Agent.Name -equals $(agentType)-$(Build.BuildId)-azure-pipelines-agent-0
+      - Agent.OSArchitecture -equals ARM64
   
   jobs: 
       - job: NETCore
